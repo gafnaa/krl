@@ -2,10 +2,6 @@
 
 Aplikasi web untuk melacak posisi estimasi KRL (Kereta Rel Listrik) rute Yogyakarta-Palur dan Palur-Yogyakarta secara real-time.
 
-## Deskripsi Proyek
-
-Proyek ini bertujuan untuk menyediakan antarmuka yang nyaman dan mudah digunakan bagi penumpang KRL untuk memantau perkiraan lokasi kereta mereka. Dengan fokus pada pengalaman pengguna seluler, aplikasi ini menampilkan jadwal kereta, stasiun saat ini, dan progres perjalanan.
-
 ## Fitur
 
 *   **Pelacakan Real-time (Estimasi):** Menampilkan perkiraan posisi kereta berdasarkan jadwal yang telah ditentukan.
@@ -23,10 +19,10 @@ Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
 1.  **Kloning repositori:**
     ```bash
-    git clone [URL_REPOSITORI_ANDA]
-    cd lacak-krl
+    git clone https://github.com/gafnaa/krl
+    cd krl
     ```
-    *(Catatan: Ganti `[URL_REPOSITORI_ANDA]` dengan URL repositori yang sebenarnya jika ini adalah proyek Git.)*
+   
 
 2.  **Instal dependensi:**
     Pastikan Anda memiliki Node.js dan npm/yarn terinstal.
@@ -50,9 +46,4 @@ Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
 Data jadwal kereta api diambil dari `src/data/trainSchedule.json`. File ini berisi informasi rute, daftar stasiun, dan waktu keberangkatan/kedatangan untuk setiap stasiun.
 
-## Teknologi yang Digunakan
 
-*   **Next.js:** Kerangka kerja React untuk aplikasi web.
-*   **React:** Pustaka JavaScript untuk membangun antarmuka pengguna.
-*   **Tailwind CSS:** Kerangka kerja CSS untuk styling cepat dan responsif.
-*   **Lucide React:** Koleksi ikon.

@@ -16,13 +16,15 @@ interface Route {
 }
 
 export default function KRLTracker() {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [selectedRouteDirection, setSelectedRouteDirection] = useState<string>("Jogja-Palur");
-  const [departureTimeInput, setDepartureTimeInput] = useState("06:45"); // This will be the selected train's departure time from the first station
+  const [departureTimeInput, setDepartureTimeInput] = useState<string>(""); // Initialize as empty string
   const [selectedDepartureTime, setSelectedDepartureTime] = useState<Date | null>(null);
   const [selectedTrainInstanceTimes, setSelectedTrainInstanceTimes] = useState<string[]>([]);
 
+  // Initialize currentTime on the client side
   useEffect(() => {
+    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -47,23 +49,31 @@ export default function KRLTracker() {
     const times = firstStation.departure_times || firstStation.arrival_times || [];
     
     // Find the index of the selected departure time in the first station's times
+    // Initialize departureTimeInput based on the selected route and its first available time
+    if (departureTimeInput === "" && times.length > 0) {
+      setDepartureTimeInput(times[0]);
+    }
+
     const selectedTimeIndex = times.indexOf(departureTimeInput);
 
-    if (selectedTimeIndex === -1) {
-      // If the input time is not found, default to the first available time
-      setDepartureTimeInput(times[0] || "");
+    if (selectedTimeIndex === -1 && times.length > 0) {
+      // If the input time is not found (e.g., after route change), default to the first available time
+      setDepartureTimeInput(times[0]);
       setSelectedTrainInstanceTimes(
         currentRouteSchedule.stations.map(
           (s) => (s.departure_times || s.arrival_times)?.[0] || ""
         )
       );
-    } else {
+    } else if (selectedTimeIndex !== -1) {
       // Set the times for the selected train instance across all stations
       setSelectedTrainInstanceTimes(
         currentRouteSchedule.stations.map(
           (s) => (s.departure_times || s.arrival_times)?.[selectedTimeIndex] || ""
         )
       );
+    } else {
+      // No times available or other edge case
+      setSelectedTrainInstanceTimes([]);
     }
 
     const [hours, minutes] = departureTimeInput.split(":").map(Number);
@@ -85,7 +95,7 @@ export default function KRLTracker() {
   }, [departureTimeInput, currentRouteSchedule]);
 
   const calculateEstimatedPosition = useMemo(() => {
-    if (!selectedDepartureTime || !currentRouteSchedule || selectedTrainInstanceTimes.length === 0) {
+    if (!selectedDepartureTime || !currentRouteSchedule || selectedTrainInstanceTimes.length === 0 || !currentTime) {
       return {
         currentStation: "Belum Berangkat",
         progress: 0,
@@ -95,7 +105,7 @@ export default function KRLTracker() {
       };
     }
 
-    const now = currentTime;
+    const now = currentTime; // currentTime is guaranteed to be Date here
     const timeDiff = now.getTime() - selectedDepartureTime.getTime();
 
     if (timeDiff < 0) {
@@ -178,7 +188,8 @@ export default function KRLTracker() {
 
   const { currentStation, progress, nextStation, timeToNext, isCompleted } = calculateEstimatedPosition;
 
-  const formatTime = (date: Date) => {
+  const formatTime = (date: Date | null) => {
+    if (!date) return "--:--:--"; // Placeholder for when date is null
     return date.toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",

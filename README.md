@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lacak KRL Jogja-Palur
 
-## Getting Started
+Aplikasi web untuk melacak posisi estimasi KRL (Kereta Rel Listrik) rute Yogyakarta-Palur dan Palur-Yogyakarta secara real-time.
 
-First, run the development server:
+## Deskripsi Proyek
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Proyek ini bertujuan untuk menyediakan antarmuka yang nyaman dan mudah digunakan bagi penumpang KRL untuk memantau perkiraan lokasi kereta mereka. Dengan fokus pada pengalaman pengguna seluler, aplikasi ini menampilkan jadwal kereta, stasiun saat ini, dan progres perjalanan.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Fitur
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+*   **Pelacakan Real-time (Estimasi):** Menampilkan perkiraan posisi kereta berdasarkan jadwal yang telah ditentukan.
+*   **Dua Arah Rute:** Mendukung pelacakan untuk rute Yogyakarta-Palur dan Palur-Yogyakarta.
+*   **Pilihan Waktu Keberangkatan:** Pengguna dapat memilih waktu keberangkatan kereta tertentu untuk dilacak.
+*   **Antarmuka Pengguna yang Intuitif:** Desain yang bersih dan responsif, dioptimalkan untuk perangkat seluler.
+*   **Progres Perjalanan:** Menampilkan persentase progres perjalanan kereta.
+*   **Informasi Stasiun:** Daftar stasiun dengan waktu keberangkatan/kedatangan yang relevan.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cara Menjalankan Proyek
 
-## Learn More
+Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
-To learn more about Next.js, take a look at the following resources:
+### Instalasi
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Kloning repositori:**
+    ```bash
+    git clone [URL_REPOSITORI_ANDA]
+    cd lacak-krl
+    ```
+    *(Catatan: Ganti `[URL_REPOSITORI_ANDA]` dengan URL repositori yang sebenarnya jika ini adalah proyek Git.)*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Instal dependensi:**
+    Pastikan Anda memiliki Node.js dan npm/yarn terinstal.
+    ```bash
+    npm install
+    # atau
+    yarn install
+    ```
 
-## Deploy on Vercel
+### Penggunaan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  **Jalankan server pengembangan:**
+    ```bash
+    npm run dev
+    # atau
+    yarn dev
+    ```
+2.  Buka browser Anda dan navigasikan ke `http://localhost:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Sumber Data
+
+Data jadwal kereta api diambil dari `src/data/trainSchedule.json`. File ini berisi informasi rute, daftar stasiun, dan waktu keberangkatan/kedatangan untuk setiap stasiun.
+
+## Teknologi yang Digunakan
+
+*   **Next.js:** Kerangka kerja React untuk aplikasi web.
+*   **React:** Pustaka JavaScript untuk membangun antarmuka pengguna.
+*   **Tailwind CSS:** Kerangka kerja CSS untuk styling cepat dan responsif.
+*   **Lucide React:** Koleksi ikon.

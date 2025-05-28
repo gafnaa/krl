@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Clock, MapPin, Train, Calendar } from "lucide-react";
+import { Clock, MapPin, Train, Calendar, Sun, Moon } from "lucide-react";
 import trainScheduleData from "../data/trainSchedule.json";
 
 interface TrainStation {
@@ -18,9 +18,17 @@ interface Route {
 export default function KRLTracker() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [selectedRouteDirection, setSelectedRouteDirection] = useState<string>("Jogja-Palur");
-  const [departureTimeInput, setDepartureTimeInput] = useState<string>(""); // Initialize as empty string
+  const [departureTimeInput, setDepartureTimeInput] = useState<string>("");
   const [selectedDepartureTime, setSelectedDepartureTime] = useState<Date | null>(null);
   const [selectedTrainInstanceTimes, setSelectedTrainInstanceTimes] = useState<string[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    // Initialize dark mode from local storage or default to false
+    if (typeof window !== 'undefined') {
+      const savedMode = localStorage.getItem('darkMode');
+      return savedMode === 'true';
+    }
+    return false;
+  });
 
   // Initialize currentTime on the client side
   useEffect(() => {
@@ -31,6 +39,18 @@ export default function KRLTracker() {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Save dark mode preference to local storage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('darkMode', String(isDarkMode));
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [isDarkMode]);
 
   const currentRouteSchedule = useMemo(() => {
     return trainScheduleData.routes.find(
@@ -204,56 +224,63 @@ export default function KRLTracker() {
   };
 
   const getStatusColor = () => {
-    if (currentStation === "Belum Berangkat") return "text-orange-600";
-    if (isCompleted) return "text-green-600";
-    return "text-blue-600";
+    if (currentStation === "Belum Berangkat") return "text-orange-600 dark:text-orange-400";
+    if (isCompleted) return "text-green-600 dark:text-green-400";
+    return "text-blue-600 dark:text-blue-400";
   };
 
   const getProgressColor = () => {
-    if (currentStation === "Belum Berangkat") return "bg-orange-500";
-    if (isCompleted) return "bg-green-500";
-    return "bg-blue-500";
+    if (currentStation === "Belum Berangkat") return "bg-orange-500 dark:bg-orange-400";
+    if (isCompleted) return "bg-green-500 dark:bg-green-400";
+    return "bg-blue-500 dark:bg-blue-400";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <Train className="w-8 h-8 text-white" />
+    <div className={`min-h-screen p-6 ${isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-gradient-to-br from-blue-50 via-white to-blue-50'}`}>
+      <div className="max-w-3xl mx-auto">
+        {/* Enhanced Header */}
+        <div className="text-center mb-10 relative">
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="absolute top-0 right-0 p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+            aria-label="Toggle dark mode"
+          >
+            {isDarkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+          </button>
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl mb-6 transform hover:scale-105 transition-transform shadow-lg">
+            <Train className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800 mb-3 dark:from-blue-300 dark:to-blue-500">
             KRL Tracker
           </h1>
-          <p className="text-gray-600">Pantau posisi kereta real-time</p>
+          <p className="text-gray-600 text-lg dark:text-gray-400">Pantau perjalanan kereta secara real-time</p>
         </div>
 
-        {/* Main Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-          {/* Current Time */}
-          <div className="flex items-center justify-center mb-6 p-4 bg-gray-50 rounded-xl">
-            <Clock className="w-5 h-5 text-gray-600 mr-2" />
-            <span className="text-lg font-semibold text-gray-800">
+        {/* Main Card with enhanced shadows and gradients */}
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100 dark:border-gray-700">
+          {/* Current Time with glass effect */}
+          <div className="flex items-center justify-center mb-8 p-5 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl backdrop-blur-sm dark:from-gray-700 dark:to-gray-700">
+            <Clock className="w-6 h-6 text-blue-600 mr-3 dark:text-blue-300" />
+            <span className="text-2xl font-bold text-blue-800 dark:text-blue-200">
               {formatTime(currentTime)} WIB
             </span>
           </div>
 
-          {/* Route Selection */}
-          <div className="mb-6">
-            <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-              <MapPin className="w-4 h-4 mr-2" />
+          {/* Route Selection with enhanced buttons */}
+          <div className="mb-8">
+            <label className="flex items-center text-sm font-semibold text-gray-700 mb-4 dark:text-gray-300">
+              <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-300" />
               Rute Perjalanan
             </label>
-            <div className="flex bg-gray-100 rounded-xl p-1">
+            <div className="flex bg-gray-50 rounded-2xl p-2 dark:bg-gray-700">
               {trainScheduleData.routes.map((route) => (
                 <button
                   key={route.direction}
                   onClick={() => setSelectedRouteDirection(route.direction)}
-                  className={`flex-1 py-3 px-4 rounded-lg text-center font-semibold transition-colors duration-200 ${
+                  className={`flex-1 py-4 px-6 rounded-xl text-center font-semibold transition-all duration-300 ${
                     selectedRouteDirection === route.direction
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-gray-700 hover:bg-gray-200"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-105"
+                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
                   }`}
                 >
                   {route.direction}
@@ -262,118 +289,105 @@ export default function KRLTracker() {
             </div>
           </div>
 
-          {/* Departure Time Input */}
-          <div className="mb-8">
-            <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-              <Calendar className="w-4 h-4 mr-2" />
-              Waktu Keberangkatan dari{" "}
-              {currentRouteSchedule?.stations[0]?.station || "Stasiun Awal"}
+          {/* Enhanced Departure Time Input */}
+          <div className="mb-10">
+            <label className="flex items-center text-sm font-semibold text-gray-700 mb-4 dark:text-gray-300">
+              <Calendar className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-300" />
+              Waktu Keberangkatan
             </label>
             <select
               value={departureTimeInput}
               onChange={(e) => setDepartureTimeInput(e.target.value)}
-              className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg font-semibold text-center focus:border-blue-500 focus:outline-none transition-colors bg-white appearance-none"
+              className="w-full p-5 border-2 border-gray-200 rounded-2xl text-lg font-semibold text-center focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all bg-white appearance-none hover:border-blue-400 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100 dark:focus:border-blue-400 dark:hover:border-blue-300"
             >
               {currentRouteSchedule?.stations[0]?.departure_times?.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
+                <option key={time} value={time}>{time}</option>
               ))}
             </select>
           </div>
 
-          {/* Current Status */}
-          <div className="text-center mb-8">
-            <p className="text-sm font-medium text-gray-600 mb-2">
+          {/* Enhanced Status Display */}
+          <div className="text-center mb-10 p-6 rounded-2xl bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-700">
+            <p className="text-sm font-medium text-gray-600 mb-3 dark:text-gray-400">
               Status Perjalanan
             </p>
-            <div className={`text-2xl font-bold mb-2 ${getStatusColor()}`}>
+            <div className={`text-3xl font-bold mb-3 ${getStatusColor()}`}>
               {currentStation}
             </div>
             {nextStation && timeToNext && timeToNext > 0 && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 bg-white px-4 py-2 rounded-full inline-block shadow-sm dark:bg-gray-800 dark:text-gray-300">
                 Menuju {nextStation} dalam {formatDuration(timeToNext)}
-              </p>
-            )}
-            {currentStation === "Belum Berangkat" && nextStation && timeToNext && (
-              <p className="text-sm text-gray-600">
-                Keberangkatan menuju {nextStation} dalam {formatDuration(timeToNext)}
               </p>
             )}
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-gray-700">Progres Perjalanan</span>
-              <span className="text-sm font-semibold text-gray-700">{progress.toFixed(1)}%</span>
+          {/* Enhanced Progress Bar */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Progres Perjalanan</span>
+              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{progress.toFixed(1)}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
+            <div className="w-full bg-gray-100 rounded-full h-4 mb-4 overflow-hidden shadow-inner dark:bg-gray-700">
               <div
-                className={`h-3 rounded-full transition-all duration-1000 ease-out ${getProgressColor()}`}
+                className={`h-4 rounded-full transition-all duration-1000 ease-out ${getProgressColor()} bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500`}
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
           </div>
         </div>
 
-        {/* Station List */}
-        <div className="bg-white rounded-2xl shadow-xl p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <MapPin className="w-5 h-5 mr-2" />
+        {/* Enhanced Station List */}
+        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 dark:bg-gray-800">
+          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center dark:text-gray-200">
+            <MapPin className="w-6 h-6 mr-3 text-blue-600 dark:text-blue-300" />
             Daftar Stasiun
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {currentRouteSchedule?.stations.map((station, index) => {
               const stationTime = selectedTrainInstanceTimes[index];
               const isCurrentStation = currentStation === station.station;
-              const isPassed =
-                currentRouteSchedule.stations.findIndex(
-                  (s) => s.station === currentStation
-                ) > index;
+              const isPassed = currentRouteSchedule.stations.findIndex(
+                (s) => s.station === currentStation
+              ) > index;
 
               return (
                 <div
                   key={station.station}
-                  className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                  className={`flex items-center justify-between p-4 rounded-xl transition-all ${
                     isCurrentStation
-                      ? "bg-blue-100 border-2 border-blue-300 shadow-md"
+                      ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 shadow-lg dark:from-blue-800 dark:to-blue-700 dark:border-blue-600"
                       : isPassed
-                      ? "bg-green-50 border border-green-200"
-                      : "bg-gray-50 border border-gray-200"
+                      ? "bg-green-50 border border-green-200 dark:bg-green-900 dark:border-green-700"
+                      : "bg-gray-50 border border-gray-200 hover:shadow-md dark:bg-gray-700 dark:border-gray-600 dark:hover:shadow-lg"
                   }`}
                 >
                   <div className="flex items-center">
                     <div
-                      className={`w-3 h-3 rounded-full mr-3 ${
+                      className={`w-4 h-4 rounded-full mr-4 ${
                         isCurrentStation
-                          ? "bg-blue-600 animate-pulse"
+                          ? "bg-blue-600 animate-pulse ring-4 ring-blue-200 dark:bg-blue-400 dark:ring-blue-600"
                           : isPassed
-                          ? "bg-green-500"
-                          : "bg-gray-300"
+                          ? "bg-green-500 dark:bg-green-400"
+                          : "bg-gray-300 dark:bg-gray-500"
                       }`}
                     ></div>
-                    <span
-                      className={`font-medium ${
-                        isCurrentStation
-                          ? "text-blue-800 font-bold"
-                          : isPassed
-                          ? "text-green-700"
-                          : "text-gray-600"
-                      }`}
-                    >
+                    <span className={`font-medium ${
+                      isCurrentStation
+                        ? "text-blue-800 font-bold text-lg dark:text-blue-200"
+                        : isPassed
+                        ? "text-green-700 dark:text-green-300"
+                        : "text-gray-600 dark:text-gray-300"
+                    }`}>
                       {station.station}
                     </span>
                   </div>
-                  <span
-                    className={`text-sm font-mono ${
-                      isCurrentStation
-                        ? "text-blue-700 font-semibold"
-                        : isPassed
-                        ? "text-green-600"
-                        : "text-gray-500"
-                    }`}
-                  >
+                  <span className={`text-sm font-mono px-4 py-2 rounded-lg ${
+                    isCurrentStation
+                      ? "bg-blue-100 text-blue-700 font-bold dark:bg-blue-900 dark:text-blue-300"
+                      : isPassed
+                      ? "bg-green-50 text-green-600 dark:bg-green-800 dark:text-green-300"
+                      : "bg-gray-100 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
+                  }`}>
                     {stationTime}
                   </span>
                 </div>
@@ -382,8 +396,8 @@ export default function KRLTracker() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8 text-gray-500 text-sm">
+        {/* Enhanced Footer */}
+        <div className="text-center mt-8 text-gray-500 text-sm bg-white rounded-2xl p-4 shadow-md dark:bg-gray-800 dark:text-gray-400">
           <p>Data jadwal bersifat estimasi dan dapat berubah sewaktu-waktu</p>
         </div>
       </div>
